@@ -14,6 +14,7 @@ public class Company {
     private String uid;
 
     // Getters and setters
+    //add comment
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getName() { return name; }
