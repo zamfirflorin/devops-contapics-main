@@ -8,12 +8,13 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/zamfirflorin/devops-contapics-main.git'
+                , credentialsId: 'ssh-key-id|test'
             }
         }
         stage('Build & Test Backend') {
             when {
                 branch 'main'
-                changeset "backend/**" // rulează doar dacă s-au modificat fișiere în backend
+//                 changeset "backend/**" // rulează doar dacă s-au modificat fișiere în backend
             }
             steps {
                 dir('backend') {
