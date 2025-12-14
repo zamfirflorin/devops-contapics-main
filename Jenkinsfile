@@ -1,72 +1,67 @@
 pipeline {
-  agent any
 
-  options {
-    skipDefaultCheckout(true)
-  }
-
-  triggers {
-    pollSCM('H/1 * * * *')
-  }
-
-  stages {
-    stage('Checkout') {
-      steps {
-        git branch: 'main',
-            url: 'https://github.com/zamfirflorin/devops-contapics-main.git',
-            credentialsId: 'ssh-key-id'   // un singur ID valid
-      }
+    triggers {
+           pollSCM('H/1 * * * *')  // la 5 minute
     }
-
-    stage('Build & Test Backend') {
-      when { branch 'main' }
-      steps {
-        dir('backend') {
-          sh 'mvn clean verify'
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/zamfirflorin/devops-contapics-main.git', credentialsId: 'ssh-key-id|github-contapics-token'
+            }
         }
-      }
-    }
 
-    stage('Build & Test Frontend') {
-      when {
-        branch 'main'
-        changeset "frontend/**"
-      }
-      steps {
-        dir('frontend') {
-          sh 'npm ci'
-          sh 'npm test'
-          sh 'npm run build'
+        stage('Build & Test Backend') {
+            when {
+                branch 'main'
+                changeset "backend/**" // rulează doar dacă s-au modificat fișiere în backend
+            }
+            steps {
+                dir('backend') {
+                    sh 'mvn clean package'
+                    sh 'mvn test'
+                }
+            }
         }
-      }
-    }
-    //test
 
-    stage('Deploy Backend') {
-      when {
-        branch 'main'
-        changeset "backend/**"
-      }
-      steps {
-        echo 'Deploy backend...'
-        // sh './deploy-backend.sh'
-      }
+        stage('Build & Test Frontend') {
+            when {
+                branch 'main'
+                changeset "frontend/**" // rulează doar dacă s-au modificat fișiere în frontend
+            }
+            steps {
+                dir('frontend') {
+                    sh 'npm install'
+                    sh 'npm run build'
+                    sh 'npm test'
+                }
+            }
+        }
+
+        stage('Deploy Backend') {
+            when {
+                branch 'main'
+                changeset "backend/**"
+            }
+            steps {
+                echo 'Deploy backend...'
+                // sh './deploy-backend.sh'
+            }
+        }
+
+        stage('Deploy Frontend') {
+            when {
+                branch 'main'
+                changeset "frontend/**"
+            }
+            steps {
+                echo 'Deploy frontend...'
+                // sh './deploy-frontend.sh'
+            }
+        }
     }
 
-    stage('Deploy Frontend') {
-      when {
-        branch 'main'
-        changeset "frontend/**"
-      }
-      steps {
-        echo 'Deploy frontend...'
-        // sh './deploy-frontend.sh'
-      }
+    post {
+        success { echo 'Pipeline complet executat cu succes!' }
+        failure { echo 'Pipeline eșuat :(' }
     }
-  }
-
-  post {
-    success { echo 'Pipeline complet executat cu succes!' }
-    failure { echo 'Pipeline eșuat :(' }
-  }
 }
