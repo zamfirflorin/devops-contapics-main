@@ -40,7 +40,7 @@ pipeline {
         stage('Deploy Backend') {
             when {
                 branch 'main'
-                changeset "backend/**"
+                //changeset "backend/**"
             }
             steps {
                 echo 'Deploy backend...'
@@ -51,7 +51,7 @@ pipeline {
         stage('Deploy Frontend') {
             when {
                 branch 'main'
-                changeset "frontend/**"
+                //changeset "frontend/**"
             }
             steps {
                 echo 'Deploy frontend...'
