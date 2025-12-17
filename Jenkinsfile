@@ -1,7 +1,7 @@
 pipeline {
-
+    agent any
     triggers {
-           pollSCM('H/1 * * * *')  // la 5 minute
+           pollSCM('H/1 * * * *')
     }
     stages {
         stage('Checkout') {
@@ -13,7 +13,7 @@ pipeline {
         stage('Build & Test Backend') {
             when {
                 branch 'main'
-                changeset "backend/**" // rulează doar dacă s-au modificat fișiere în backend
+                changeset "backend/**"
             }
             steps {
                 dir('backend') {
@@ -26,7 +26,7 @@ pipeline {
         stage('Build & Test Frontend') {
             when {
                 branch 'main'
-                changeset "frontend/**" // rulează doar dacă s-au modificat fișiere în frontend
+                changeset "frontend/**"
             }
             steps {
                 dir('frontend') {
