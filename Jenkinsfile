@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/zamfirflorin/devops-contapics-main.git', credentialsId: 'ssh-key-id|github-contapics-token'
+                git branch: 'main', url: 'https://github.com/zamfirflorin/devops-contapics-main.git', credentialsId: 'github-contapics-token'
             }
         }
 
@@ -47,7 +47,7 @@ pipeline {
                 // sh './deploy-backend.sh'
             }
         }
-
+        //test
         stage('Deploy Frontend') {
             when {
                 branch 'main'
