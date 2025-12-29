@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  DB_USERNAME: "admin"
+  DB_HOST: "db"
+  DB_PORT: "5432"
+  DB_NAME: "postgres"
+  CORS_ALLOWED_ORIGIN: "*"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+data:
+  config.js: |
+    window.__CONFIG__ = {
+      API_URL: "http://localhost:8080"
+    };
