@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: node-app
-          image: node:20-alpine
+          image: node:20.3-alpine
           command: ["node", "-e", "require('http').createServer((req,res)=>{res.end('Hello GitOps!')}).listen(8080)"]
           ports:
             - containerPort: 8080
