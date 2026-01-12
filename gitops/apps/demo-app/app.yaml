@@ -7,7 +7,7 @@ spec:
   source:
     repoURL: https://github.com/zamfirflorin/devops-contapics-main
     targetRevision: main
-    path: apps/demo-app
+    path: gitops/apps/demo-app
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
