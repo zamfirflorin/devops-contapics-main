@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: demo-app
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/zamfirflorin/devops-contapics-main
+    targetRevision: main
+    path: apps/demo-app
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
