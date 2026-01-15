@@ -1,0 +1,32 @@
+image:
+  repository: docker.io/library/backend
+  tag: "2.0"
+  pullPolicy: Never
+replicaCount: 1
+
+service:
+  type: ClusterIP
+  port: 8080
+
+cors:
+  allowed:
+    origin: "*"
+
+postgresql:
+  auth:
+    username: admin
+    password: c2VjdXJlMTIz
+    database: postgres
+  primary:
+    service:
+      port: 5432
+    persistence:
+      enabled: true
+      storageClass: standard
+      size: 2Gi
+
+ingress:
+  enabled: false
+
+httpRoute:
+  enabled: false
