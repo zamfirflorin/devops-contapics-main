@@ -29,35 +29,35 @@ spec:
             - name: DB_USERNAME
               valueFrom:
                 configMapKeyRef:
-                  name: {{ include "backend.fullname" . }}-config
+                  name: backend-config
                   key: DB_USERNAME
 
             - name: DB_HOST
               valueFrom:
                 configMapKeyRef:
-                  name: {{ include "backend.fullname" . }}-config
+                  name: backend-config
                   key: DB_HOST
 
             - name: DB_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: {{ include "backend.fullname" . }}-config
+                  name: backend-config
                   key: DB_NAME
 
             - name: DB_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: {{ include "backend.fullname" . }}-config
+                  name: backend-config
                   key: DB_PORT
 
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "backend.fullname" . }}-secret
+                  name: secrets
                   key: DB_PASSWORD
 
             - name: CORS_ALLOWED_ORIGIN
               valueFrom:
                 configMapKeyRef:
-                  name: {{ include "backend.fullname" . }}-config
+                  name: backend-config
                   key: CORS_ALLOWED_ORIGIN

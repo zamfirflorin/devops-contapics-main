@@ -6,7 +6,7 @@ kind: HTTPRoute
 metadata:
   name: {{ $fullName }}
   labels:
-    {{- include "backend.labels" . | nindent 4 }}
+    {{- include "postgres-db-for-backend.labels" . | nindent 4 }}
   {{- with .Values.httpRoute.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

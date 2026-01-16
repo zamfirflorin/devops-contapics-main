@@ -12,7 +12,7 @@
       </select>
       <select v-if="form.role === 'CLIENT'" v-model="form.companyId">
         <option v-for="company in companies" :key="company.id" :value="company.id">
-          {{ company.name }}
+          {{ company.name }}  
         </option>
       </select>
       <button type="submit">{{ isEditing ? "Update User" : "Add User" }}</button>
