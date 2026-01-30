@@ -1,5 +1,7 @@
-FROM python:3.11-slim
+#FROM python:3.11-slim --for local
 
+#for linux/amd64 platform
+FROM --platform=linux/amd64 python:3.11-slim 
 # Install system dependencies for Tesseract OCR
 RUN apt-get update && apt-get install -y \
     tesseract-ocr \

@@ -8,14 +8,6 @@ data:
   DB_PORT: "5432"
   DB_NAME: "postgres"
   CORS_ALLOWED_ORIGIN: "*"
-
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: frontend-config
-data:
-  config.js: |
-    window.__CONFIG__ = {
-      API_URL: "http://localhost:8080"
-    };
+  AWS_S3_BUCKET_NAME: "florin-zamf-demo-bucket"
+  AWS_REGION: "eu-central-1"
+  AWS_S3_ENDPOINT: ""

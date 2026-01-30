@@ -4,6 +4,6 @@ metadata:
   name: frontend-config
 data:
   config.js: |
-    window.__CONFIG__ = {
-      API_URL: "http://localhost:8080"
+    window._env_ = {
+      BACKEND_URL: "http://localhost:8080"
     };

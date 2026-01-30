@@ -1,0 +1,32 @@
+- name: Build and push Docker images to ECR
+  hosts: localhost
+  gather_facts: no
+  vars:
+    aws_region: eu-central-1
+  tasks:
+    - name: Get AWS account ID
+      command: aws sts get-caller-identity --query Account --output text
+      register: account_id
+
+    - name: Authenticate Podman to ECR
+      shell: |
+        aws ecr get-login-password --region {{ aws_region }} | \
+        podman login --username AWS --password-stdin {{ account_id.stdout }}.dkr.ecr.{{ aws_region }}.amazonaws.com
+
+    - name: Build and push backend
+      shell: |
+        podman buildx build --platform linux/amd64 -t backend:latest ../backend
+        podman tag backend:latest {{ account_id.stdout }}.dkr.ecr.{{ aws_region }}.amazonaws.com/backend:latest
+        podman push {{ account_id.stdout }}.dkr.ecr.{{ aws_region }}.amazonaws.com/backend:latest
+
+    - name: Build and push frontend
+      shell: |
+        podman buildx build --platform linux/amd64 -t frontend:latest ../frontend
+        podman tag frontend:latest {{ account_id.stdout }}.dkr.ecr.{{ aws_region }}.amazonaws.com/frontend:latest
+        podman push {{ account_id.stdout }}.dkr.ecr.{{ aws_region }}.amazonaws.com/frontend:latest
+    
+    - name: Build and push ocr
+      shell: |
+        podman buildx build --platform linux/amd64 -t ocr:latest ../ocr
+        podman tag frontend:latest {{ account_id.stdout }}.dkr.ecr.{{ aws_region }}.amazonaws.com/ocr:latest
+        podman push {{ account_id.stdout }}.dkr.ecr.{{ aws_region }}.amazonaws.com/ocr:latest

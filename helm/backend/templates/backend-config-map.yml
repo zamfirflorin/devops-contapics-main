@@ -3,8 +3,12 @@ kind: ConfigMap
 metadata:
   name: backend-config
 data:
-  DB_USERNAME: {{ .Values.postgresql.auth.username }}
-  DB_HOST: "db"
+  DB_USERNAME: "{{ .Values.postgresql.auth.username }}"
+  DB_HOST: "{{ .Release.Name }}-postgresql"
   DB_PORT: "{{ .Values.postgresql.primary.service.port }}"
-  DB_NAME: {{ .Values.postgresql.auth.database }}
+  DB_NAME: "{{ .Values.postgresql.auth.database }}"
   CORS_ALLOWED_ORIGIN: "{{ .Values.cors.allowed.origin }}"
+  AWS_S3_BUCKET_NAME: "{{ .Values.aws.s3.name }}"
+  AWS_REGION: "{{ .Values.aws.region }}"
+  AWS_S3_ENDPOINT: "{{ .Values.aws.s3.endpoint | default "" }}"
+  OCR_SERVICE_URL: "http://ocr-service:5001"

@@ -21,7 +21,7 @@ spec:
             limits:
               cpu: "500m"
               memory: "512Mi"
-          image: docker.io/library/frontend:4.0
+          image: docker.io/library/frontend:3.0
           ports:
             - containerPort: 80
           volumeMounts:

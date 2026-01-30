@@ -1,18 +1,13 @@
-# frontend/Dockerfile
-FROM docker.io/library/node:22-alpine AS build
+# Use --platform=$BUILDPLATFORM to run Node natively on your Mac
+FROM --platform=$BUILDPLATFORM docker.io/library/node:22-alpine AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-ENV VITE_BACKEND_URL=http://localhost:8080
 RUN npm run build
- 
-FROM docker.io/library/nginx:alpine
-#RUN addgroup -S florin && adduser -S florin -G florin
-#     mkdir -p /var/cache/nginx /var/run/nginx /var/log/nginx && \
-#     chown -R florin:florin /var/cache/nginx /var/run/nginx /var/log/nginx /etc/nginx/conf.d
 
-#USER florin
+# The final stage will be the target architecture (amd64)
+FROM --platform=linux/amd64 docker.io/library/nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
-EXPOSE 3000
+EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

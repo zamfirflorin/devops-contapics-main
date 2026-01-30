@@ -3,8 +3,9 @@
     <header v-if="isAuthenticated">
       <h1>Management Dashboard</h1>
       <nav>
-        <button :class="{ active: currentScreen === 'users' }" @click="currentScreen = 'users'">Users</button>
-        <button :class="{ active: currentScreen === 'companies' }" @click="currentScreen = 'companies'">Companies</button>
+        <button v-if="userRole === 'ADMIN'" :class="{ active: currentScreen === 'users' }" @click="currentScreen = 'users'">Users</button>
+        <button v-if="userRole === 'ADMIN'" :class="{ active: currentScreen === 'companies' }" @click="currentScreen = 'companies'">Companies</button>
+        <button :class="{ active: currentScreen === 'photos' }" @click="currentScreen = 'photos'">Photos</button>
         <button @click="logout">Logout</button>
       </nav>
     </header>
@@ -18,11 +19,14 @@
         </form>
       </div>
       <div v-else>
-        <div v-if="currentScreen === 'users'">
+        <div v-if="currentScreen === 'users' && userRole === 'ADMIN'">
           <UserManagement />
         </div>
-        <div v-else-if="currentScreen === 'companies'">
+        <div v-else-if="currentScreen === 'companies' && userRole === 'ADMIN'">
           <CompanyManagement />
+        </div>
+        <div v-else-if="currentScreen === 'photos'">
+          <PhotoManagement />
         </div>
       </div>
     </main>
@@ -32,6 +36,7 @@
 <script>
 import UserManagement from "./UserManagement.vue";
 import CompanyManagement from "./CompanyManagement.vue";
+import PhotoManagement from "./PhotoManagement.vue";
 import axios from "axios";
 
 export default {
@@ -39,10 +44,11 @@ export default {
   components: {
     UserManagement,
     CompanyManagement,
+    PhotoManagement, // Register the new component
   },
   data() {
     return {
-      currentScreen: "users", // Default screen
+      currentScreen: "photos", // Default screen (accessible to all users)
       isAuthenticated: false,
       userRole: null,
       credentials: {
@@ -54,27 +60,47 @@ export default {
   methods: {
     async login() {
       try {
-        const response = await axios.post(`${window._env_.BACKEND_URL}/auth/login`, this.credentials);
+        const backendUrl = window._env_?.BACKEND_URL || 'http://localhost:8080';
+        console.log('Attempting login to:', `${backendUrl}/auth/login`);
+        
+        const response = await axios.post(`${backendUrl}/auth/login`, this.credentials);
+        console.log('Login response:', response.data);
+        
+        if (!response.data.token) {
+          throw new Error('No token received from server');
+        }
+        
         this.isAuthenticated = true;
         localStorage.setItem("authToken", response.data.token);
 
         // Fetch user details from /auth/me
-        const userDetails = await axios.get(`${window._env_.BACKEND_URL}/auth/me`, {
-          headers: {
-            Authorization: `Bearer ${response.data.token}`,
-          },
-        });
+        try {
+          const userDetails = await axios.get(`${backendUrl}/auth/me`, {
+            headers: {
+              Authorization: `Bearer ${response.data.token}`,
+            },
+          });
+          console.log('User details:', userDetails.data);
 
-        this.userRole = userDetails.data.role || (userDetails.data.authorities && userDetails.data.authorities[0]?.authority);
+          this.userRole = userDetails.data.role || (userDetails.data.authorities && userDetails.data.authorities[0]?.authority);
 
-        if (this.userRole === "ADMIN") {
-          //alert("Welcome, Admin! You now have access to the dashboard.");
-        } else {
-          alert("Access denied. Only admins can view this dashboard.");
-          this.logout();
+          // Set default screen based on role
+          if (this.userRole === "ADMIN") {
+            this.currentScreen = "users"; // Admins see users by default
+          } else {
+            this.currentScreen = "photos"; // Non-admins see photos by default
+          }
+        } catch (meError) {
+          console.error('Error fetching user details:', meError);
+          // Login was successful, but fetching user details failed
+          // Still allow login to proceed with default role
+          this.userRole = "CLIENT"; // Default role
+          this.currentScreen = "photos";
         }
       } catch (error) {
-        alert("Login failed. Please check your credentials.");
+        console.error('Login error:', error);
+        console.error('Error details:', error.response?.data || error.message);
+        alert(`Login failed: ${error.response?.data?.message || error.message || 'Please check your credentials.'}`);
       }
     },
     logout() {

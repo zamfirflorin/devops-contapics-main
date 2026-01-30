@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+data:
+  config.js: |
+    const isLocalhost = window.location.hostname === 'localhost';
+    window._env_ = {
+      BACKEND_URL: isLocalhost ? "http://localhost:8080" : "/api"
+    };

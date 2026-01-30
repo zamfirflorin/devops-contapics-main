@@ -1,0 +1,44 @@
+- name: Setup Prometheus si Grafana Stack
+  hosts: monitoring_servers
+  become: yes
+  tasks:
+    - name: Instalare Docker
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Creare director configurare Prometheus
+      file:
+        path: /etc/prometheus
+        state: directory
+        mode: '0755'
+
+    - name: Copiere configuratie Prometheus
+      copy:
+        src: ./configs/prometheus.yml
+        dest: /etc/prometheus/prometheus.yml
+        mode: '0644'
+
+    - name: Pornire container Prometheus
+      docker_container:
+        name: prometheus
+        image: prom/prometheus:latest
+        restart_policy: always
+        ports:
+          - "9090:9090"
+        volumes:
+          - /etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+          - prometheus_data:/prometheus # Pentru ca datele sa nu se piarda la restart
+
+    - name: Pornire container Grafana
+      docker_container:
+        name: grafana
+        image: grafana/grafana:latest
+        restart_policy: always
+        ports:
+          - "3000:3000"
+        env:
+          GF_SECURITY_ADMIN_PASSWORD: "parola_ta_aici" # Schimba parola de admin
+        volumes:
+          - grafana_data:/var/lib/grafana # Persistenta dashboard-urilor

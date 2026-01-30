@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,21 +22,31 @@ public class S3Service {
     @Value("${aws.s3.bucket-name}")
     private String bucketName;
 
-    @Value("${aws.s3.region}")
+    @Value("${aws.s3.region:eu-central-1}")
     private String region;
 
     @Value("${aws.s3.endpoint:}")
     private String endpoint;
+
+    @Value("${aws.access-key-id:}")
+    private String accessKey;
+
+    @Value("${aws.secret-access-key:}")
+    private String secretKey;
+
+
+    protected final Log logger = LogFactory.getLog(getClass());
 
     /**
      * Upload a file to S3 and return the file URL
      */
     public String uploadFile(MultipartFile file, String companyUid) throws IOException {
         // Generate unique filename to avoid conflicts
+
         String originalFilename = file.getOriginalFilename();
         String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
         String key = "photos/" + companyUid + "/" + UUID.randomUUID() + fileExtension;
-
+        logger.info(String.format("endpoint %s, bucket %s, region %s, key %s, acessKey %s, secretyKey %s", endpoint, bucketName, region, key, accessKey, secretKey));
         // Upload to S3
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
@@ -53,10 +65,16 @@ public class S3Service {
      */
     private String getFileUrl(String key) {
         // If using MinIO (custom endpoint), construct URL differently
+
         if (endpoint != null && !endpoint.isEmpty()) {
             return endpoint + "/" + bucketName + "/" + key;
         }
+
         // AWS S3 URL format
+        if (endpoint == null || endpoint.isEmpty()) {
+            return String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, region, key);
+        }
+        logger.info(String.format("endpoint %s, bucket %s, region %s, key %s, acessKey %s, secretyKey %s", endpoint, bucketName, region, key, accessKey, secretKey));
         return String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, region, key);
     }
 

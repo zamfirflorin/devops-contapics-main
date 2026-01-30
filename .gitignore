@@ -1,0 +1,16 @@
+# Terraform internals
+**/.terraform/*
+.terraform/
+**/.terraform.lock.hcl
+
+# State files
+*.tfstate
+*.tfstate.*
+
+# IDE files
+.idea/
+.vscode/
+
+# Personal / Sensitive
+*.pdf
+*.tfvars

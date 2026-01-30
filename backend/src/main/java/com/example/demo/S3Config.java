@@ -14,7 +14,7 @@ import java.net.URI;
 @Configuration
 public class S3Config {
 
-    @Value("${aws.s3.region}")
+    @Value("${aws.s3.region:eu-central-1}")
     private String region;
 
     @Value("${aws.s3.endpoint:}")

@@ -29,6 +29,7 @@ public class BackendApplication {
 				u1.setUsername("admin");
 				u1.setPassword(passwordEncoder.encode("adminpass"));
 				u1.setRole(User.Role.ADMIN);
+                u1.setCompany(companyRepository.findAll().get(0));
 				userRepository.save(u1);
 
 				User u2 = new User();

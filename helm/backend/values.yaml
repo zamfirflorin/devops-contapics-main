@@ -1,11 +1,12 @@
 image:
   repository: docker.io/library/backend
-  tag: "2.0"
+  tag: "9.0"
   pullPolicy: Never
 replicaCount: 1
 
 service:
-  type: ClusterIP
+  #schimbat din ClusterIP in NodePort pentru a putea accesa serviciul din afara clusterului k8s pentru prometheus
+  type: NodePort
   port: 8080
 
 cors:
@@ -15,7 +16,7 @@ cors:
 postgresql:
   auth:
     username: admin
-    password: c2VjdXJlMTIz
+    password: adminpass
     database: postgres
   primary:
     service:
@@ -25,8 +26,13 @@ postgresql:
       storageClass: standard
       size: 2Gi
 
+aws:
+  s3:
+    name: florin-zamf-demo-bucket
+  region: eu-central-1
+
 ingress:
-  enabled: false
+  enabled: true
 
 httpRoute:
   enabled: false
